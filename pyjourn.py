@@ -59,9 +59,7 @@ class PyJournRoot(tk.Frame):
 
 		self.name_box = tk.Entry(entry_window)
 		#self.name_box.grid(row=2, column=2, columnspan=6)
-		self.name_box.pack()
-
-		
+		self.name_box.pack()	
 
 		entry_create_button = tk.Button(entry_window, text="Create", command=self.donothing)
 

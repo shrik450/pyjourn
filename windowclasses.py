@@ -18,25 +18,25 @@ class new_journal():
 	def __init__(self, master):
 		self.master = master
 
-		file_dialog = tk.Toplevel()
-		file_dialog.title("New Journal")
+		self.file_dialog = tk.Toplevel()
+		self.file_dialog.title("New Journal")
 
-		self.prompt = tk.Label(file_dialog, text="Create a New Journal")
+		self.prompt = tk.Label(self.file_dialog, text="Create a New Journal")
 		self.prompt.grid(row=0, column=0, columnspan=4)
 
-		name_prompt = tk.Label(file_dialog, text="Name:")
+		name_prompt = tk.Label(self.file_dialog, text="Name:")
 		name_prompt.grid(row=1, column=0)
 
-		self.name_box = tk.Entry(file_dialog)
+		self.name_box = tk.Entry(self.file_dialog)
 		self.name_box.grid(row=1, column=1, columnspan=2)
 
-		password_prompt = tk.Label(file_dialog, text="Password")
+		password_prompt = tk.Label(self.file_dialog, text="Password")
 		password_prompt.grid(row=2, column=0)
 
-		self.password_box = tk.Entry(file_dialog, show="*")
+		self.password_box = tk.Entry(self.file_dialog, show="*")
 		self.password_box.grid(row=2, column=1, columnspan=2)
 
-		create_button = tk.Button(file_dialog, text="Create", command=self.create_journal)
+		create_button = tk.Button(self.file_dialog, text="Create", command=self.create_journal)
 		create_button.grid(row=1, column=3, rowspan=2)	
 
 	def create_journal(self):
@@ -62,7 +62,7 @@ class new_journal():
 			preamble = [(journal_name+"\n").encode('utf-8'), (getpass.getuser()+"\n").encode('utf-8'), (time.strftime("%x") + "\n").encode('utf-8'), (time.strftime("%X") + "\n").encode('utf-8')]
 			encrypt_and_writelines(journal_index, preamble, session_fernet)
 
-			file_dialog.destroy()
+			self.file_dialog.destroy()
 			journal_index.close()
 
 			self.master.session_journal = journal_name
