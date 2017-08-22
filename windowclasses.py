@@ -56,7 +56,7 @@ class new_journal():
 			session_fernet = fernet(key)
 
 			os.makedirs(journal_name)
-			journal_index = open(journal_name + ".pji", "w+b")
+			journal_index = open(journal_name + ".pjindex", "w+b")
 
 			journal_index.write((str(salt)+"\n").encode('utf-8'))
 			preamble = [(journal_name+"\n").encode('utf-8'), (getpass.getuser()+"\n").encode('utf-8'), (time.strftime("%x") + "\n").encode('utf-8'), (time.strftime("%X") + "\n").encode('utf-8')]
@@ -68,6 +68,9 @@ class new_journal():
 			self.master.session_journal = journal_name
 			self.master.session_fernet = session_fernet
 
+			self.master.open_journal_master()
+
 		except OSError:
 			self.prompt["text"] = "A Journal with this name already exists. Please use another name."
+
 
