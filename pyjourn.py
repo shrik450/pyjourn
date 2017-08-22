@@ -72,7 +72,7 @@ class PyJournRoot(tk.Frame):
 			self.journal_index = open(self.journal_name + ".pji", "w+b")
 			self.journal_index.write((str(salt)+"\n").encode('utf-8'))
 			preamble = [(self.journal_name+"\n").encode('utf-8'), (getpass.getuser()+"\n").encode('utf-8'), (time.strftime("%x") + "\n").encode('utf-8'), (time.strftime("%X") + "\n").encode('utf-8')]
-			self.encode_and_writelines(self.journal_index, preamble)
+			self.encrypt_and_writelines(self.journal_index, preamble)
 		except OSError:
 			self.prompt["text"] = "A Journal with this name already exists. Please use another name."
 
