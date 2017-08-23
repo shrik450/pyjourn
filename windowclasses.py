@@ -7,6 +7,7 @@ from cryptography.fernet import Fernet as fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from tkinter.filedialog import askopenfilename
 
 def encrypt_and_writelines(file, lines, session_fernet):
 	for line in lines:
@@ -100,8 +101,8 @@ class open_journal():
 		open_button.grid(row=2, column=6, columnspan=2)
 
 	def browse(self):
-		journal_location = tk.tkFiledialog.askopenfilename(initialdir="/", title="Select Journal", filetypes=(("PyJourn Index Files","*.pjindex"), ("All Files", "*.*")))
-		self.name_box.insert(journal_location)
+		journal_location = askopenfilename(initialdir="/", title="Select Journal", filetypes=(("PyJourn Index Files","*.pjindex"), ("All Files", "*.*")))
+		self.name_box.insert(0, journal_location)
 
 	def open_now(self):
 		journal_location = self.name_box.get()
@@ -110,11 +111,11 @@ class open_journal():
 		self.master.session_journal_location = journal_location
 
 		journal_index = open(journal_location, "r+")
-		journal_salt = self.session_journal_index.readline()[2:-4].encode('utf-8')
+		journal_salt = journal_index.readline()[2:-4].encode('utf-8')
 		kdf = PBKDF2HMAC(
 			algorithm=hashes.SHA256,
 			length=32,
-			salt=salt,
+			salt=journal_salt,
 			iterations=100000,
 			backend=default_backend()
 		)
