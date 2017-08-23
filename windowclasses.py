@@ -9,10 +9,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 def encrypt_and_writelines(file, lines, session_fernet):
-	outstream = []
 	for line in lines:
-		outstream.append(session_fernet.encrypt(str(line).encode('utf-8')))
-		file.writelines(outstream)
+		file.write(session_fernet.encrypt(str(line).encode('utf-8')).decode('utf-8') + "\n")
 
 class new_journal():
 	def __init__(self, master):
@@ -56,10 +54,10 @@ class new_journal():
 			session_fernet = fernet(key)
 
 			os.makedirs(journal_name)
-			journal_index = open(journal_name + ".pjindex", "w+b")
+			journal_index = open(journal_name + ".pjindex", "w+")
 
-			journal_index.write((str(salt)+"\n").encode('utf-8'))
-			preamble = [(journal_name+"\n").encode('utf-8'), (getpass.getuser()+"\n").encode('utf-8'), (time.strftime("%x") + "\n").encode('utf-8'), (time.strftime("%X") + "\n").encode('utf-8')]
+			journal_index.write(str(salt) + "\n")
+			preamble = [journal_name, getpass.getuser(), time.strftime("%x"), time.strftime("%X")]
 			encrypt_and_writelines(journal_index, preamble, session_fernet)
 
 			self.file_dialog.destroy()

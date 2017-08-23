@@ -37,13 +37,12 @@ class PyJournRoot(tk.Frame):
 		new_journal_window = new_journal(self)
 
 	def open_journal_master(self):
-		self.session_journal_index = open(self.session_journal + ".pjindex", "r+b")
-		session_journal_hash = self.session_journal_index.readline().decode('utf-8')
-		print(session_journal_hash[2:-2])
-		session_journal_encrypted_text = self.session_journal_index.read()
-		print(session_journal_encrypted_text)
-		self.session_journal_index_text = (self.session_fernet.decrypt(session_journal_encrypted_text)).decode('utf-8')
-		print(self.session_journal_index_text)
+		self.session_journal_index = open(self.session_journal + ".pjindex", "r+")
+		session_journal_hash = self.session_journal_index.readline()
+		self.session_journal_params = []
+		for i in range(4):
+			self.session_journal_params.append(self.session_fernet.decrypt(self.session_journal_index.readline().encode('utf-8')).decode('utf-8'))
+		print(self.session_journal_params)
 
 	def new_entry(self):
 		entry_window = tk.Toplevel()
