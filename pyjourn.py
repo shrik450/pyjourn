@@ -8,7 +8,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from windowclasses import *
+import windowclasses
 
 class PyJournRoot(tk.Frame):
 	def __init__(self, master):
@@ -17,32 +17,36 @@ class PyJournRoot(tk.Frame):
 
 		menubar = tk.Menu(master)
 
-		filemenu = tk.Menu(menubar, tearoff=0)
-		filemenu.add_command(label="New Journal", command=self.create_new_journal)#, state=tk.DISABLED)
-		filemenu.add_command(label="Open Journal", command=self.donothing, state=tk.DISABLED)
-		filemenu.add_separator()
-		filemenu.add_command(label="New Entry", command=self.donothing, state=tk.DISABLED)
-		filemenu.add_command(label="Open Entry", command=self.donothing, state=tk.DISABLED)
-		filemenu.add_separator()
-		filemenu.add_command(label="Exit", command=master.quit)
+		self.filemenu = tk.Menu(menubar, tearoff=0)
+		self.filemenu.add_command(label="New Journal", command=self.new_journal)
+		self.filemenu.add_command(label="Open Journal", command=self.open_journal)
+		self.filemenu.add_command(label="New Entry", command=self.donothing, state=tk.DISABLED)
+		self.filemenu.add_command(label="Open Entry", command=self.donothing, state=tk.DISABLED)
+		self.filemenu.add_separator()
+		self.filemenu.add_command(label="Exit", command=master.quit)
 
-		menubar.add_cascade(label="File", menu=filemenu)
+		menubar.add_cascade(label="File", menu=self.filemenu)
 
 		master.config(menu=menubar)
 
-		self.session_journal = None
+		self.session_journal_location = None
 		self.session_fernet = None
 
-	def create_new_journal(self):
-		new_journal_window = new_journal(self)
+	def new_journal(self):
+		new_journal_window = windowclasses.new_journal(self)
 
 	def open_journal_master(self):
-		self.session_journal_index = open(self.session_journal + ".pjindex", "r+")
-		session_journal_hash = self.session_journal_index.readline()
+		self.session_journal_index = open(self.session_journal_location, "r+")
+		session_journal_salt = self.session_journal_index.readline()
 		self.session_journal_params = []
 		for i in range(4):
 			self.session_journal_params.append(self.session_fernet.decrypt(self.session_journal_index.readline().encode('utf-8')).decode('utf-8'))
 		print(self.session_journal_params)
+		self.filemenu.entryconfig("New Entry", state=tk.ACTIVE)
+		self.filemenu.entryconfig("Open Entry", state=tk.ACTIVE)
+
+	def open_journal(self):
+		open_journal_window = windowclasses.open_journal(self)
 
 	def new_entry(self):
 		entry_window = tk.Toplevel()

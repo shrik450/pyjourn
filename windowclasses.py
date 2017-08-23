@@ -63,12 +63,64 @@ class new_journal():
 			self.file_dialog.destroy()
 			journal_index.close()
 
-			self.master.session_journal = journal_name
+			self.master.session_journal_location = journal_name + ".pjindex"
 			self.master.session_fernet = session_fernet
 
 			self.master.open_journal_master()
 
 		except OSError:
-			self.prompt["text"] = "A Journal with this name already exists. Please use another name."
+			self.prompt["text"] = "You cannot use this name, as either a Journal with that name already exists, or it is invalid."
 
+class open_journal():
+	def __init__(self, master):
+		self.master = master
 
+		self.file_dialog = tk.Toplevel()
+		self.file_dialog.title("Open Journal")
+
+		prompt = tk.Label(self.file_dialog, text="Open Journal:")
+		prompt.grid(row=0, column=0, columnspan=2)
+
+		name_prompt = tk.Label(self.file_dialog, text="Name:")
+		name_prompt.grid(row=1, column=0)
+
+		self.name_box = tk.Entry(self.file_dialog)
+		self.name_box.grid(row=1, column=1, columnspan=5)
+
+		browse_button = tk.Button(self.file_dialog, text="Browse", command=self.browse)
+		browse_button.grid(row=1, column=6, columnspan=2)
+
+		password_prompt = tk.Label(self.file_dialog, text="Password:")
+		password_prompt.grid(row=2, column=0)
+
+		self.password_box = tk.Entry(self.file_dialog)
+		self.password_box.grid(row=2, column=1, columnspan=5)
+
+		open_button = tk.Button(self.file_dialog, text="Open", command=self.open_now)
+		open_button.grid(row=2, column=6, columnspan=2)
+
+	def browse(self):
+		journal_location = tk.tkFiledialog.askopenfilename(initialdir="/", title="Select Journal", filetypes=(("PyJourn Index Files","*.pjindex"), ("All Files", "*.*")))
+		self.name_box.insert(journal_location)
+
+	def open_now(self):
+		journal_location = self.name_box.get()
+		journal_password = self.password_box.get()
+
+		self.master.session_journal_location = journal_location
+
+		journal_index = open(journal_location, "r+")
+		journal_salt = self.session_journal_index.readline()[2:-4].encode('utf-8')
+		kdf = PBKDF2HMAC(
+			algorithm=hashes.SHA256,
+			length=32,
+			salt=salt,
+			iterations=100000,
+			backend=default_backend()
+		)
+		key = base64.urlsafe_b64encode(kdf.derive(journal_password.encode('utf-8')))
+		journal_fernet = fernet(key)
+
+		self.master.session_fernet = journal_fernet
+
+		self.master.open_journal_master()
